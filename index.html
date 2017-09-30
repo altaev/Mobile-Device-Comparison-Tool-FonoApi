@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>Compare Phone Models</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script type="text/javascript" src="js/fonoapi.jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap3-typeahead.min.js"></script>		
+	<style type="text/css">
+		html,body{
+			width:100%;
+			height:100%;		
+		}
+		.table-compare{
+			margin-top: 30px;
+			clear:both;
+			overflow:hidden;
+		}
+		#wrapperBox{
+			height:100%;
+			width:90%;
+			margin:0px auto;
+		}
+		@media screen and (min-width:1200px){
+			#wrapperBox{
+				width:1150px;
+			}		
+		}
+		.table{
+			display:table;
+		}
+		.table .container-cell{
+			display:table-cell;
+			vertical-align:middle;
+		}
+		.centered{
+			text-align: center;
+		}
+		.info-row td:nth-child(even){
+			background-color:white;
+		}
+		.fixed{
+			position: fixed;
+			top:0;
+			-webkit-box-shadow: 1px 3px 10px 0px rgba(0,0,0,0.5);
+			-moz-box-shadow: 1px 3px 10px 0px rgba(0,0,0,0.5);
+			box-shadow: 1px 3px 10px 0px rgba(0,0,0,0.5);
+			white-space: nowrap; 
+		}
+	</style>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>		
+	<script type="text/javascript">
+			var token = "86b89476caaf66eda3f21279b7711afc"; //demo token
+			//all legend fields
+			//var legend = [["DeviceName", "Device Name"],["Brand", "Brand"],["technology", "Technology"],["2g_bands", "2g Bands"],["gprs", "GPRS"],["edge", "EDGE"],["announced", "Announced"],["status", "Status"],["dimensions", "Dimensions"],["weight", "Weight"],["sim", "Sim"],["type", "Display Type"],["size", "Size"],["resolution", "Resolution"],["card_slot", "Card Slot"],["phonebook", "Phonebook"],["call_records", "Call Records"],["camera_c", "Camera Availablity"],["alert_types", "Alert Types"],["loudspeaker_", "Loudspeaker"],["3_5mm_jack_", "3.5mm Jack"],["sound_c", "Sound Quality"],["wlan", "WLAN"],["bluetooth", "Bluetooth"],["gps", "GPS"],["infrared_port", "Infrared Port"],["radio", "Radio"],["usb", "USB"],["messaging", "Messaging"],["browser", "Browser"],["clock", "Clock"],["alarm", "Alarm"],["games", "Games"],["languages", "Languages"],["java", "Java"],["features_c", "Features"],["battery_c", "Battery Information"],["stand_by", "Standby Time"],["talk_time", "Talk Time"],["colors", "Available Colors"],["sensors", "Sensors"],["cpu", "CPU"],["internal", "Internal Memory + RAM"],["os", "OS"],["body_c", "Body Features"],["keyboard", "Keyboard"],["primary_", "Primary camera"],["video", "Video"],["secondary", "Secondary Camera"],["3g_bands", "3g Bands"],["speed", "Speed"],["network_c", "Network"],["chipset", "Chipset"],["features", "Additional Features"],["music_play", "Music Play"],["protection", "Protection"],["gpu", "GPU"],["multitouch","Multitouch"],["loudspeaker", "Loudspeaker"],["audio_quality", "Audio Quality"],["nfc","NFC"],["camera","Camera"],["display","Display"],["battery_life","Battery Life"],["4g_bands", "4g Bands"]];
+			var legend = [["DeviceName", "Device Name"],["Brand", "Brand"],["technology", "Technology"],["gprs", "GPRS"],["edge", "EDGE"],["announced", "Announced"],["status", "Status"],["dimensions", "Dimensions"],["weight", "Weight"],["sim", "Sim"],["type", "Display Type"],["size", "Size"],["resolution", "Resolution"],["card_slot", "Card Slot"],["alert_types", "Alert Types"],["loudspeaker_", "Loudspeaker"],["sound_c", "Sound Quality"],["wlan", "WLAN"],["bluetooth", "Bluetooth"],["gps", "GPS"],["infrared_port", "Infrared Port"],["radio", "Radio"],["usb", "USB"],["messaging", "Messaging"],["browser", "Browser"],["java", "Java"],["features_c", "Features"],["battery_c", "Battery Information"],["talk_time", "Talk Time"],["colors", "Available Colors"],["sensors", "Sensors"],["cpu", "CPU"],["internal", "Internal Memory + RAM"],["os", "OS"],["body_c", "Body Features"],["primary_", "Primary camera"],["video", "Video"],["secondary", "Secondary Camera"],["speed", "Speed"],["network_c", "Network"],["chipset", "Chipset"],["features", "Additional Features"],["music_play", "Music Play"],["protection", "Protection"],["gpu", "GPU"],["multitouch","Multitouch"],["loudspeaker", "Loudspeaker"],["audio_quality", "Audio Quality"],["nfc","NFC"],["camera","Camera"],["display","Display"]];
+			
+		
+			function makeStickyRow(){
+				$("[data-key='DeviceName']").find('td').each(function(){
+					$(this).css("width", ($(this).width()+16)+"px"); //16 -padding
+				});
+			}
+			function clearStickyRow(){
+				$("[data-key='DeviceName']").find('td').each(function(){
+					$(this).css("width", "");
+				});
+			}
+			
+			function getImgPath(phoneCellNumber, name){
+				var result = null;
+				$.get("gPhone.php?n="+name, function (data) {$(".img-row td[data-cellphone=" + phoneCellNumber + "] img").attr("src", data)});	
+				
+				return result;
+			}
+			$(window).scroll(function(){
+			  var sticky = $('.phone-name'),
+				  scroll = $(window).scrollTop();
+
+			  if (scroll >= 450){	
+				  if(!sticky.hasClass('fixed')){
+					makeStickyRow();
+					sticky.addClass('fixed');
+				  }
+			  }else{
+				sticky.removeClass('fixed');
+				clearStickyRow();
+			  }
+			});
+			$(document).ready(function () {
+				//build the table and hide it onload
+				
+				var content = '<div class="compare-table-box" style="display:none;position:relative"><h3>Compare Models</h3>';
+				
+				content += '<table id="compareTable" class="table table-striped" style="width:100%">';
+										
+				content += '<tr class="th"><th>Legend</th></tr>';
+				content += '<tr class="img-row"><td></td></tr>';
+				
+				legend.forEach(function(item, i, arr) {
+				  content += "<tr data-key=\"" + item[0] + "\" class=\"info-row\"><td class=\"info\">" + item[1] + "</td><tr>";
+				});
+				
+				content += "</table></div>";
+				$('.table-compare').append(content);
+			
+				// remove phone action
+				$("body").on("touchstart click", "a.del", function (e) {
+					if (e.originalEvent.defaultPrevented) return;
+					$('[data-cellphone="' + $(this).attr("rel") + '"]').remove();
+				});
+				
+				// add new phone to the table
+				$("body").on('touchstart click', '.submit', function (e) {
+					if (e.originalEvent.defaultPrevented) return;
+					$(".form-group").addClass('o-hidden');
+					$(".wrapper").removeClass('table');
+					$('.api').fonoApi({
+						token: token,
+						device: $('.devname').val(),
+						limit: 50,
+						template: function () {
+
+							// argument contains the data object // *returns html content
+							return $.map(arguments, function (obj, i) {
+								if ($('.devname').val() == obj.DeviceName) {
+									if (!$("#compareTable").data("maxcellnumber")) {
+										//set Phone Cell Number
+										var phoneCellNumber = 1;
+										//show table
+										$(".compare-table-box").show();
+									} else {
+										var phoneCellNumber = $("#compareTable").data("maxcellnumber") * 1 + 1;
+									}
+										//set new max cell number
+										$("#compareTable").data("maxcellnumber", phoneCellNumber);
+										
+										//build new header cell
+										$(".th").append("<th data-cellphone=\"" + phoneCellNumber + "\" class=\"centered\"><a href=\"#\" class=\"del\" rel=\"" + phoneCellNumber + "\">Remove</a></th>");
+										
+										//add new empty cell into each table row
+										$(".info-row").append("<td data-cellphone=\"" + phoneCellNumber + "\"></td>");
+								
+
+										for (var key in obj) {
+											if(key == "DeviceName"){
+												if($("[data-key=" + key + "]").not('.phone-name')){
+													$("[data-key=" + key + "]").addClass("phone-name");
+												}
+												$(".img-row").append("<td data-cellphone=\"" + phoneCellNumber + "\" class=\"centered\"><img src=\"\" alt=\"\"/></td>");
+												getImgPath(phoneCellNumber, obj[key]);
+											}
+											//fill the data to new cell for each row with specific key
+											$("[data-key=" + key + "]").find('[data-cellphone="' + phoneCellNumber + '"]').html(obj[key]);
+										}
+										
+										return true;
+									
+
+								}
+							});
+
+						}
+					});
+
+				});
+				
+				//autocomplete
+				var $input = $(".typeahead");
+
+				var typeaheadInput = $(".typeahead");
+				typeaheadInput.typeahead({
+					autoSelect: true,
+					minLength: 3,
+					source: function (query, process) {
+						//call phone db api
+						return $.get("https://fonoapi.freshpixl.com/v1/getdevice?token=" + token + "&device=" + $input.val(), function (data) {
+							var results = [];
+							$.map(data, function (obj, i) {
+								for (var key in obj) {
+									if (key == "DeviceName") {
+										results.push({
+											id: obj[key],
+											name: obj[key]
+										});
+									}
+								}
+							});
+							process(results);
+						}, 'json');
+
+					}
+				});
+
+			});
+	</script>
+</head>
+<body>
+	<div class="table wrapper" id="wrapperBox">
+		<div class="container-cell">		
+			<div class="form-group">
+			<div class="col-12 col-sm-10 col-md-10 col-lg-10"><input class="devname form-control typeahead" type="text"  data-provide="typeahead" placeholder="Start typing device model name to compare" ></input> </div>
+				<div class="col-12 col-sm-2 col-md-2 col-lg-2"><a href="#" class="form-control btn btn-primary submit">Add to List</a></div>
+			</div>
+			<div class="form-group">
+				<div class="api" style="display:none"></div>
+				<div class="table-compare"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
